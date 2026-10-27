@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Factor Analytics Dashboard</title>
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0c0d10;
+            --panel-bg: #14161d;
+            --accent-gold: #f4c430;
+            --text-main: #ffffff;
+            --text-sub: #a0a5b5;
+            --border-color: #2a2e3d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 15px;
+        }
+
+        /* Top Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Layout Grid */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 15px;
+        }
+
+        /* Sidebar Filters */
+        .sidebar {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .sidebar h3 {
+            color: var(--accent-gold);
+            font-size: 13px;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        .filter-group {
+            margin-bottom: 12px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+        }
+
+        .filter-group select, .filter-group input {
+            width: 100%;
+            background-color: #0b0c10;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Top KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        .kpi-card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px 12px;
+            position: relative;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background-color: var(--accent-gold);
+        }
+
+        .kpi-title {
+            font-size: 10px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+        }
+
+        .kpi-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent-gold);
+            margin-top: 4px;
+        }
+
+        /* Charts Layout */
+        .charts-grid-top {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        .charts-grid-bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        /* Tables & Charts */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            color: var(--text-sub);
+            background-color: #0c0d10;
+        }
+
+        .gauge-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 160px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>📊 Risk Factor Analytics Dashboard</h1>
+        <div style="font-size: 12px; color: var(--accent-gold); font-weight: bold;">RISK FACTOR</div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-container">
+        
+        <!-- Sidebar Filters -->
+        <div class="sidebar">
+            <h3>FILTERS</h3>
+            <div class="filter-group">
+                <label>Governorate</label>
+                <select><option>All</option><option>Assiut</option><option>Sohag</option><option>Minya</option><option>Qena</option><option>Luxor</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Center</label>
+                <select><option>All</option><option>Abnub</option><option>Manfalut</option><option>El Fateh</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Date</label>
+                <select><option>All</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Product</label>
+                <select><option>All</option><option>Assiut Cement</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Rating Range</label>
+                <input type="range" min="1" max="10" value="8">
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="main-content">
+            
+            <!-- Top KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-title">Risk Score</div>
+                    <div class="kpi-value">8.3</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Quality Score</div>
+                    <div class="kpi-value">91.72</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Open Critical Risks</div>
+                    <div class="kpi-value">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Total Ratings</div>
+                    <div class="kpi-value">784</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Monthly Quality /5</div>
+                    <div class="kpi-value">4.8</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Max Severity</div>
+                    <div class="kpi-value">4</div>
+                </div>
+            </div>
+
+            <!-- Middle Section -->
+            <div class="charts-grid-top">
+                <div class="card">
+                    <div class="card-title">Governorate Performance Breakdown</div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Governorate</th>
+                                <th>Assiut</th>
+                                <th>Mohandes</th>
+                                <th>Moqawem</th>
+                                <th>Saeed</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Assiut</td><td>12.9</td><td>11.9</td><td>8.5</td><td>3.6</td><td>9.1</td></tr>
+                            <tr><td>Dakahlia</td><td>-</td><td>7.3</td><td>0.0</td><td>10.0</td><td>3.6</td></tr>
+                            <tr><td>Gharbia</td><td>-</td><td>10.0</td><td>-</td><td>-</td><td>10.0</td></tr>
+                            <tr><td>Giza</td><td>-</td><td>10.0</td><td>10.0</td><td>-</td><td>10.0</td></tr>
+                            <tr><td>Sohag</td><td>10.5</td><td>1.6</td><td>9.3</td><td>12.6</td><td>8.8</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Risk Score Gauge</div>
+                    <div class="gauge-container">
+                        <canvas id="gaugeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="charts-grid-bottom">
+                <div class="card">
+                    <div class="card-title">Count of Rating by Center</div>
+                    <canvas id="barChart" height="130"></canvas>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Ratings Count vs Risk Score</div>
+                    <canvas id="scatterChart" height="130"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Script to render charts using Chart.js -->
